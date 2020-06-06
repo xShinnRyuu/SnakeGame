@@ -7,7 +7,6 @@ import java.awt.geom.*;
 
 public class StartGame extends JPanel implements ActionListener, KeyListener {
 
-    /// tetst
 
 
     private static final long serialVersionUID = 1L;
