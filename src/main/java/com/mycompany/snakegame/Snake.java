@@ -4,26 +4,35 @@ package com.mycompany.snakegame;
  */
 
 public class Snake {
-    final int SNAKE_SIZE = 20;
+    final double SNAKE_SIZE = 20;
     private double currX, currY;
     private double prevX, prevY;
-    private int growth;
+    private int tail;
 
-    public Snake(double currX, double currY) {
+    public Snake() {
+        this.currX = 0;
+        this.currY = 0;
+        this.prevX = 0;
+        this.prevY = 0;
+        tail = 0;
+    }
+
+    public Snake(double currX, double currY, boolean center) {
         this.currX = currX/2;
         this.currY = currY/2;
-        prevX = currX/2;
-        prevY = currX/2;
-        growth = 0;
+        prevX = 0;
+        prevY = 0;
+        tail = 0;
     }
     
-    public Snake(double currX, double currY, double prevX, double prevY) {
+    public Snake(double currX, double currY) {
         this.currX = currX;
         this.currY = currX;
-        this.prevX = prevX;
-        this.prevY = prevY;
-        growth = 0;
+        this.prevX = 0;
+        this.prevY = 0;
+        tail = 0;
     }
+    
 
     public static void main(String[] args) {
         new GameFrame();
@@ -54,19 +63,35 @@ public class Snake {
     }
 
     int getGrowth() {
-        return growth;
+        return tail;
     }
 
     void setGrowth(int growth) {
-        this.growth = growth;
+        this.tail = growth;
     }
 
     void eat() {
         // TODO: make this into function to add length to the snake
-        growth++;
+        tail++;
     }
 
-    int getSnakeSize() {
+    double getSnakeSize() {
         return SNAKE_SIZE;
+    }
+
+    public double getPrevX() {
+        return prevX;
+    }
+
+    public void setPrevX(double prevX) {
+        this.prevX = prevX;
+    }
+
+    public double getPrevY() {
+        return prevY;
+    }
+
+    public void setPrevY(double prevY) {
+        this.prevY = prevY;
     }
 }

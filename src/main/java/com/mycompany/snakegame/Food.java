@@ -39,7 +39,7 @@ public class Food {
         // g2.fill(new Ellipse2D.Double(x, y, FOOD_SIZE, FOOD_SIZE));
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
@@ -47,7 +47,7 @@ public class Food {
         this.x = x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
@@ -55,7 +55,7 @@ public class Food {
         this.y = y;
     }
 
-    public int getSize() {
+    public double getSize() {
         return FOOD_SIZE;
     }
 }

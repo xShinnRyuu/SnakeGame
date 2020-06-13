@@ -4,22 +4,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
+import java.util.concurrent.TimeUnit;
 
 public class StartGame extends JPanel implements ActionListener, KeyListener {
 
-
-
     private static final long serialVersionUID = 1L;
-    private static final double POSITIVE_SPEED = 1;
-    private static final double NEGATIVE_SPEED = -1;
-    private static final int MAX = 4;
-    private static final int MIN = 1;
+    private final double POSITIVE_SPEED = 4;
+    private final double NEGATIVE_SPEED = -4;
+    private final int GAME_REDRAW_SPEED = 10;
+    private final int GAME_TIMER_ONE_SECOND = 1000;
+    private final int MAX = 4;
+    private final int MIN = 1;
     private Snake snakePiece;
     private Snake snakeBody[];
     private Food food;
     static Timer movementTimer;
     static Timer playTimer;
     double velx, vely;
+    int counter = 0;
 
     public StartGame(float frameWidth, float frameHeight) {
         startGameSetup(frameWidth, frameHeight);
@@ -30,9 +32,9 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     }
 
     private void startGameSetup(float frameWidth, float frameHeight) {
-        snakePiece = new Snake(frameWidth, frameHeight);
+        snakePiece = new Snake(frameWidth, frameHeight, true);
         food = new Food(frameWidth, frameHeight);
-        int maxSnakeLength = ((int)(frameWidth*frameHeight))/(snakePiece.getSnakeSize()*2);
+        int maxSnakeLength = (int) ((frameWidth * frameHeight) / (snakePiece.getSnakeSize() * 2));
         snakeBody = new Snake[maxSnakeLength];
         snakeBody[0] = snakePiece;
         velx = 0;
@@ -45,9 +47,9 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     }
 
     private void startTimers() {
-        movementTimer = new Timer(5, this);
+        movementTimer = new Timer(GAME_REDRAW_SPEED, this);
         movementTimer.start();
-        playTimer = new Timer(1000, playTime);
+        playTimer = new Timer(GAME_TIMER_ONE_SECOND, playTime);
         playTimer.start();
     }
 
@@ -57,86 +59,81 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
             GameFrame.increaseTime();
         }
     };
-    
+
     public void paintComponent(final Graphics g) {
         requestFocus(true);
-        super.paintComponent(g);
         final Graphics2D g2 = (Graphics2D) g;
+        super.paintComponent(g);
         foodCheck(g2);
-        wallCheck();
-        eatCheck();
+        double snakeSize = snakePiece.getSnakeSize();
+        snakeHeadDirChange(0, snakeSize);
         for (int i = 0; i < snakeBody.length; i++) {
-            if(snakeBody[i] == null) {
+            if (snakeBody[i] == null) {
                 // System.out.println("break");
                 break;
             }
             // System.out.println("redraw");
-            g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE, snakePiece.SNAKE_SIZE));
+            g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
+                    snakePiece.SNAKE_SIZE));
         }
     }
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        for (int i = 0; i < snakeBody.length; i++) {
-            if(snakeBody[i] == null) {
-                repaint();
-                // System.out.println("break: " + i);
-                break;
-            }
-            // snakeBody[i].setX(snakeBody[i].getX() + velx);
-            // snakeBody[i].setX(snakeBody[i].getY() + vely);
-            // snakeBodyDirChange(i);
-            // System.out.println("no break: " + i);
-            // if (i == 0) {
-                // BUG: There is a bug that the snake does not follow the body.
-                // FIXME: set the coordinates of each body piece to the coordinates of the piece before it.
-                snakeBodyDirChange(i);
-            // } else {
-            //     snakeBodyDirChange(i);
-            //     snakeBodyGrowthMoreThanOne(i);
-            // }
+        double snakeSize = snakePiece.getSnakeSize();
+        wallCheck();
+        eatCheck();
+        try {
+            repaint();
+            TimeUnit.MILLISECONDS.sleep(3);
+        } catch (InterruptedException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        for (int i = snakePiece.getGrowth(); i > 0; i--) {
+                snakeBodyGrow(i, snakeSize);
         }
     }
 
-    private void snakeBodyDirChange(int i) {
-        // System.out.println("Just 1");
+    // TODO: fix snake spacing... or call it the caterpillar game :D
+    private void snakeBodyGrow(int i, double snakeSize) {
         if (velx > 0) {
-            // System.out.println("velx > 0");
-            snakeBody[i].setX((snakePiece.getX() - snakePiece.getSnakeSize()*i) + velx);
-            snakeBody[i].setY(snakePiece.getY() + vely);
+            snakeBody[i].setX(snakeBody[i-1].getX());
+            snakeBody[i].setY(snakeBody[i-1].getY());
         } else if (velx < 0) {
-            // System.out.println("velx < 0");
-            snakeBody[i].setX((snakePiece.getX() + snakePiece.getSnakeSize()*i) + velx);
-            snakeBody[i].setY(snakePiece.getY() + vely);
+            snakeBody[i].setX(snakeBody[i-1].getX());
+            snakeBody[i].setY(snakeBody[i-1].getY());
         } else if (vely > 0) {
-            // System.out.println("vely > 0");
-            snakeBody[i].setX(snakePiece.getX()  + velx);
-            snakeBody[i].setY((snakePiece.getY() - snakePiece.getSnakeSize()*i) + vely);
+            snakeBody[i].setX(snakeBody[i-1].getX());
+            snakeBody[i].setY(snakeBody[i-1].getY());
         } else if (vely < 0) {
-            // System.out.println("vely < 0");
-            snakeBody[i].setX(snakePiece.getX()  + velx);
-            snakeBody[i].setY((snakePiece.getY() + snakePiece.getSnakeSize()*i) + vely);
+            snakeBody[i].setX(snakeBody[i-1].getX());
+            snakeBody[i].setY(snakeBody[i-1].getY());
         }
     }
 
-    private void snakeBodyGrowthMoreThanOne(int i) {
-        // System.out.println("More than 1");
+    private void snakeHeadDirChange(int i, double snakeSize) {
+        // System.out.println("Just 1: " + i);
         if (velx > 0) {
+            snakeBody[i].setX(snakePiece.getX() + velx);
+            snakeBody[i].setY(snakePiece.getY());
             // System.out.println("velx > 0");
-            snakeBody[i].setX((snakeBody[i-1].getX() - snakePiece.getSnakeSize()*i) + velx);
-            snakeBody[i].setY(snakeBody[i-1].getY() + vely);
+            // snakeBody[i].setPrevX((snakePiece.getX() - snakePiece.getSnakeSize()) + velx);
+            // snakeBody[i].setPrevY(snakePiece.getY() + velx);
+            // snakeBody[i].setX((food.getX() - snakePiece.getSnakeSize()*i) + velx);
+            // snakeBody[i].setY(food.getY() + vely);
         } else if (velx < 0) {
             // System.out.println("velx < 0");
-            snakeBody[i].setX((snakeBody[i-1].getX() + snakePiece.getSnakeSize()*i) + velx);
-            snakeBody[i].setY(snakeBody[i-1].getY() + vely);
+            snakeBody[i].setX((snakePiece.getX()) + velx);
+            snakeBody[i].setY(snakePiece.getY());
         } else if (vely > 0) {
             // System.out.println("vely > 0");
-            snakeBody[i].setX(snakeBody[i-1].getX() + velx);
-            snakeBody[i].setY((snakeBody[i-1].getY() - snakePiece.getSnakeSize()*i) + vely);
+            snakeBody[i].setX(snakePiece.getX());
+            snakeBody[i].setY((snakePiece.getY()) + vely);
         } else if (vely < 0) {
             // System.out.println("vely < 0");
-            snakeBody[i].setX(snakeBody[i-1].getX()  + velx);
-            snakeBody[i].setY((snakeBody[i-1].getY() + snakePiece.getSnakeSize()*i) + vely);
+            snakeBody[i].setX(snakePiece.getX());
+            snakeBody[i].setY((snakePiece.getY()) + vely);
         }
     }
 
@@ -160,10 +157,10 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         if(checkRight() || checkLeft()) {
             // System.out.println("eat");
             snakePiece.eat();
-            // TODO: set the BODY to the HEAD'S previous coordinates
-            snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY(), food.getX(), food.getY());
-            snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY());
-            // System.out.println("new snake body");
+            // snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY(), food.getX(), food.getY());
+            // snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY());
+            snakeBody[snakePiece.getGrowth()] = new Snake(snakeBody[snakePiece.getGrowth()-1].getX2(), snakeBody[snakePiece.getGrowth()-1].getY2());
+            System.out.println("new snake body GROWTH: " + snakePiece.getGrowth());
             toggleFlag();
             GameFrame.increaseScore();
         }

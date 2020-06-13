@@ -37,7 +37,9 @@ class GameFrame extends JFrame implements ActionListener {
 
     GameFrame() {
         gameFrame = new JFrame();
-        currGamePanel = null;
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        gameFrame.setLocation(size.width/2 - FRAME_WIDTH/2, size.height/2 - FRAME_HEIGHT/2);
         setGameFrameParams();
         createMenuPanel();
     }
