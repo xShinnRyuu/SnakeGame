@@ -23,6 +23,8 @@ class GameFrame extends JFrame implements ActionListener {
     static final int STATS_PANEL = 50;
     final int BORDER_HORIZONTAL = 250;
     final int BORDER_VERTICAL = 200;
+    final int VERTICAL_ALIGNMENT = 110;
+    final int HORIZONTAL_ALIGNMENT = 35;
     static int score = 0;
     static int time = 0;
     private JFrame gameFrame;
@@ -37,15 +39,15 @@ class GameFrame extends JFrame implements ActionListener {
 
     GameFrame() {
         gameFrame = new JFrame();
-        Toolkit toolkit = getToolkit();
-        Dimension size = toolkit.getScreenSize();
-        gameFrame.setLocation(size.width/2 - FRAME_WIDTH/2, size.height/2 - FRAME_HEIGHT/2);
         setGameFrameParams();
         createMenuPanel();
     }
 
     // set game frame parameters
     private void setGameFrameParams() {
+        Toolkit toolkit = getToolkit();
+        Dimension size = toolkit.getScreenSize();
+        gameFrame.setLocation(size.width/2 - FRAME_WIDTH/2, size.height/2 - FRAME_HEIGHT/2);
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setTitle("Sneks!");
         gameFrame.setVisible(true);
@@ -69,7 +71,6 @@ class GameFrame extends JFrame implements ActionListener {
     private void createBannerPanel() {
         statsPanel = new JPanel();
         statsPanel.setLayout(new GridLayout(1, 3));
-        // statsPanel.setPreferredSize(new Dimension(STATS_PANEL, STATS_PANEL));
         statsPanel.setBackground(new Color(52, 116, 235));
 
         // setup score label
@@ -87,6 +88,7 @@ class GameFrame extends JFrame implements ActionListener {
 
     private JPanel createIngameButtons(JPanel statsPanel) {
         JPanel ingameButtonPanel = new JPanel();
+        ingameButtonPanel.setBackground(new Color(52, 116, 235));
         addResetButton(ingameButtonPanel);
         addExitButton(ingameButtonPanel);
         return ingameButtonPanel;
@@ -126,7 +128,8 @@ class GameFrame extends JFrame implements ActionListener {
                 gameFrame.remove(currGamePanel);
                 gameFrame.remove(statsPanel);
                 createBannerPanel();
-                currGamePanel = new StartGame(gameFrame.getWidth() - 35, gameFrame.getHeight() - 110);
+                currGamePanel = new StartGame(gameFrame.getWidth() - HORIZONTAL_ALIGNMENT, gameFrame.getHeight() - VERTICAL_ALIGNMENT);
+                currGamePanel.setBackground(new Color(216,223,227));
                 gameFrame.add(currGamePanel);
             }
         });
@@ -153,7 +156,7 @@ class GameFrame extends JFrame implements ActionListener {
                 gameFrame.remove(statsPanel);
                 c.getParent().setVisible(false);
                 c.getParent().remove(currGamePanel);
-                currGamePanel.setVisible(false);;
+                currGamePanel.setVisible(false);
                 currGamePanel = null;
                 createMenuPanel();
                 menuPanel.setVisible(true);
@@ -166,7 +169,9 @@ class GameFrame extends JFrame implements ActionListener {
         menuPanel.setVisible(false);
         gameFrame.remove(menuPanel);
         createBannerPanel();
-        gameFrame.add(currGamePanel = new StartGame(gameFrame.getWidth() - 35, gameFrame.getHeight() - 110));
+        gameFrame.add(currGamePanel = new StartGame(gameFrame.getWidth() - HORIZONTAL_ALIGNMENT, 
+            gameFrame.getHeight() - VERTICAL_ALIGNMENT));
+        currGamePanel.setBackground(new Color(216,223,227));
     }
 
     void resetScore() {

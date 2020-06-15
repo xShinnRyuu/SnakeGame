@@ -9,12 +9,13 @@ import java.util.concurrent.TimeUnit;
 public class StartGame extends JPanel implements ActionListener, KeyListener {
 
     private static final long serialVersionUID = 1L;
-    private final double POSITIVE_SPEED = 4;
-    private final double NEGATIVE_SPEED = -4;
-    private final int GAME_REDRAW_SPEED = 10;
+    private final double POSITIVE_SPEED = 6;
+    private final double NEGATIVE_SPEED = -6;
+    private final int GAME_REDRAW_SPEED = 25;
     private final int GAME_TIMER_ONE_SECOND = 1000;
     private final int MAX = 4;
     private final int MIN = 1;
+    private int maxSnakeLength;
     private Snake snakePiece;
     private Snake snakeBody[];
     private Food food;
@@ -24,17 +25,13 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     int counter = 0;
 
     public StartGame(float frameWidth, float frameHeight) {
-        startGameSetup(frameWidth, frameHeight);
-        // startGame();
-        // System.out.println("new GAME");
-        // System.out.println("velx: " + velx);
-        // System.out.println("vely: " + vely);
+        startGame(frameWidth, frameHeight);
     }
 
-    private void startGameSetup(float frameWidth, float frameHeight) {
+    private void startGame(float frameWidth, float frameHeight) {
         snakePiece = new Snake(frameWidth, frameHeight, true);
         food = new Food(frameWidth, frameHeight);
-        int maxSnakeLength = (int) ((frameWidth * frameHeight) / (snakePiece.getSnakeSize() * 2));
+        maxSnakeLength = (int) ((frameWidth * frameHeight) / (snakePiece.getSnakeSize() * 2));
         snakeBody = new Snake[maxSnakeLength];
         snakeBody[0] = snakePiece;
         velx = 0;
@@ -65,38 +62,39 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         final Graphics2D g2 = (Graphics2D) g;
         super.paintComponent(g);
         foodCheck(g2);
-        double snakeSize = snakePiece.getSnakeSize();
-        snakeHeadDirChange(0, snakeSize);
-        for (int i = 0; i < snakeBody.length; i++) {
-            if (snakeBody[i] == null) {
-                // System.out.println("break");
-                break;
-            }
-            // System.out.println("redraw");
-            g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
+        for (int i = snakePiece.getGrowth(); i >= 0; i--) {
+            // if (snakeBody[i] == null) {
+            //     // System.out.println("break");
+            //     break;
+            // } else {
+                g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
                     snakePiece.SNAKE_SIZE));
+            // }
         }
     }
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        double snakeSize = snakePiece.getSnakeSize();
         wallCheck();
         eatCheck();
-        try {
-            repaint();
-            TimeUnit.MILLISECONDS.sleep(3);
-        } catch (InterruptedException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        for (int i = snakePiece.getGrowth(); i > 0; i--) {
-                snakeBodyGrow(i, snakeSize);
+        // try {
+        //     TimeUnit.MILLISECONDS.sleep(3);
+        // } catch (InterruptedException e1) {
+        //     // TODO Auto-generated catch block
+        //     e1.printStackTrace();
+        // }
+        for (int i = snakePiece.getGrowth(); i >= 0; i--) {
+            if (i == 0) {
+                snakeHeadDirChange();
+                repaint();
+                break;
+            }
+                snakeBodyGrow(i);
         }
     }
 
     // TODO: fix snake spacing... or call it the caterpillar game :D
-    private void snakeBodyGrow(int i, double snakeSize) {
+    private void snakeBodyGrow(int i) {
         if (velx > 0) {
             snakeBody[i].setX(snakeBody[i-1].getX());
             snakeBody[i].setY(snakeBody[i-1].getY());
@@ -112,28 +110,19 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    private void snakeHeadDirChange(int i, double snakeSize) {
-        // System.out.println("Just 1: " + i);
+    private void snakeHeadDirChange() {
         if (velx > 0) {
-            snakeBody[i].setX(snakePiece.getX() + velx);
-            snakeBody[i].setY(snakePiece.getY());
-            // System.out.println("velx > 0");
-            // snakeBody[i].setPrevX((snakePiece.getX() - snakePiece.getSnakeSize()) + velx);
-            // snakeBody[i].setPrevY(snakePiece.getY() + velx);
-            // snakeBody[i].setX((food.getX() - snakePiece.getSnakeSize()*i) + velx);
-            // snakeBody[i].setY(food.getY() + vely);
+            snakePiece.setX(snakePiece.getX() + velx);
+            snakePiece.setY(snakePiece.getY());
         } else if (velx < 0) {
-            // System.out.println("velx < 0");
-            snakeBody[i].setX((snakePiece.getX()) + velx);
-            snakeBody[i].setY(snakePiece.getY());
+            snakePiece.setX((snakePiece.getX()) + velx);
+            snakePiece.setY(snakePiece.getY());
         } else if (vely > 0) {
-            // System.out.println("vely > 0");
-            snakeBody[i].setX(snakePiece.getX());
-            snakeBody[i].setY((snakePiece.getY()) + vely);
+            snakePiece.setX(snakePiece.getX());
+            snakePiece.setY((snakePiece.getY()) + vely);
         } else if (vely < 0) {
-            // System.out.println("vely < 0");
-            snakeBody[i].setX(snakePiece.getX());
-            snakeBody[i].setY((snakePiece.getY()) + vely);
+            snakePiece.setX(snakePiece.getX());
+            snakePiece.setY((snakePiece.getY()) + vely);
         }
     }
 
@@ -141,7 +130,6 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         food.spawnFood(g2, food.foodFlag);
         if (!food.foodFlag) {
             toggleFlag();
-            // System.out.println("toggle");
         }
     }
 
@@ -155,12 +143,8 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
 
     private void eatCheck() {
         if(checkRight() || checkLeft()) {
-            // System.out.println("eat");
             snakePiece.eat();
-            // snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY(), food.getX(), food.getY());
-            // snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY());
             snakeBody[snakePiece.getGrowth()] = new Snake(snakeBody[snakePiece.getGrowth()-1].getX2(), snakeBody[snakePiece.getGrowth()-1].getY2());
-            System.out.println("new snake body GROWTH: " + snakePiece.getGrowth());
             toggleFlag();
             GameFrame.increaseScore();
         }
@@ -182,7 +166,6 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
 
     private void setStartDirection() {
         final int dir = (int) (Math.random() * (MAX - MIN + 1) + MIN);
-        // System.out.println(dir);
         if (dir == 1) {
             vely = NEGATIVE_SPEED;
             velx = 0;
@@ -251,36 +234,3 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     public void keyTyped(final KeyEvent e) {
     }
 }
-
-/**
-if (velx > 0) {
-    System.out.println("new snake body");
-    // System.out.println("velx > 0");
-    snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX() - snakePiece.SNAKE_SIZE, snakePiece.getY(),
-            snakeBody[snakePiece.getGrowth() - 1].getX(), snakeBody[snakePiece.getGrowth() - 1].getY());
-    // snakeBody[i].setX((snakeBody[i-1].getX() - snakePiece.getSnakeSize()*i) + velx);
-    // snakeBody[i].setY(snakeBody[i-1].getY() + vely);
-} else if (velx < 0) {
-    System.out.println("new snake body");
-    // System.out.println("velx < 0");
-    snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX() + snakePiece.SNAKE_SIZE, snakePiece.getY(),
-    snakeBody[snakePiece.getGrowth() - 1].getX(), snakeBody[snakePiece.getGrowth() - 1].getY());
-
-    // snakeBody[i].setX((snakeBody[i-1].getX() + snakePiece.getSnakeSize()*i) + velx);
-    // snakeBody[i].setY(snakeBody[i-1].getY() + vely);
-} else if (vely > 0) {
-    System.out.println("new snake body");
-    // System.out.println("vely > 0");
-    snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY() - snakePiece.SNAKE_SIZE,
-    snakeBody[snakePiece.getGrowth() - 1].getX(), snakeBody[snakePiece.getGrowth() - 1].getY());
-    // snakeBody[i].setX(snakeBody[i-1].getX() + velx);
-    // snakeBody[i].setY((snakeBody[i-1].getY() - snakePiece.getSnakeSize()*i) + vely);
-} else if (vely < 0) {
-    System.out.println("new snake body");
-    // System.out.println("vely < 0");
-    snakeBody[snakePiece.getGrowth()] = new Snake(snakePiece.getX(), snakePiece.getY() + snakePiece.SNAKE_SIZE,
-    snakeBody[snakePiece.getGrowth() - 1].getX(), snakeBody[snakePiece.getGrowth() - 1].getY());
-    // snakeBody[i].setX(snakeBody[i-1].getX()  + velx);
-    // snakeBody[i].setY((snakeBody[i-1].getY() + snakePiece.getSnakeSize()*i) + vely);
-} 
-*/
