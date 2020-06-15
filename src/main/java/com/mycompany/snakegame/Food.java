@@ -29,14 +29,9 @@ public class Food {
             Random rand = new Random();
             x = rand.nextInt((int) constraintX);
             y = rand.nextInt((int) constraintY);
-            // System.out.println();
-            // System.out.println("test");
-            // System.out.println("x: " + x);
-            // System.out.println("y: " + y);
         }
         g2.setColor(foodColor);
         g2.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
-        // g2.fill(new Ellipse2D.Double(x, y, FOOD_SIZE, FOOD_SIZE));
     }
 
     public double getX() {

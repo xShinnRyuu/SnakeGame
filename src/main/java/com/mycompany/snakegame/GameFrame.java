@@ -196,7 +196,7 @@ class GameFrame extends JFrame implements ActionListener {
     }
 
     public static void increaseScore() {
-        System.out.println("score: " + score);
+        // System.out.println("score: " + score);
         scoreLabel.setText(" Score: " + ++score);
     }
 
