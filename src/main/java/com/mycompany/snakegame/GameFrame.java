@@ -128,7 +128,8 @@ class GameFrame extends JFrame implements ActionListener {
                 gameFrame.remove(currGamePanel);
                 gameFrame.remove(statsPanel);
                 createBannerPanel();
-                currGamePanel = new StartGame(gameFrame.getWidth() - HORIZONTAL_ALIGNMENT, gameFrame.getHeight() - VERTICAL_ALIGNMENT);
+                currGamePanel = new StartGame(gameFrame.getWidth() - 
+                    HORIZONTAL_ALIGNMENT, gameFrame.getHeight() - VERTICAL_ALIGNMENT);
                 currGamePanel.setBackground(new Color(216,223,227));
                 gameFrame.add(currGamePanel);
             }
