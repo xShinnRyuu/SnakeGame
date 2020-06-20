@@ -35,7 +35,7 @@ public class Snake {
         return currX;
     }
 
-    double getX2() {
+    double getXPlusSize() {
         return currX + SNAKE_SIZE;
     }
 
@@ -47,7 +47,7 @@ public class Snake {
         return currY;
     }
 
-    double getY2() {
+    double getYPlusSize() {
         return currY + SNAKE_SIZE;
     }
 

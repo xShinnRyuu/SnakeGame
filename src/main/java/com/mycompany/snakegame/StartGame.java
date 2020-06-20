@@ -63,6 +63,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         super.paintComponent(g);
         foodCheck(g2);
         wallCheck();
+        bodyCheck();
         eatCheck();
         for (int i = 0; i <= snakePiece.getGrowth(); i++) {
             g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
@@ -127,6 +128,19 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
                 || snakePiece.getY() < 0 || snakePiece.getY() > GameFrame.FRAME_HEIGHT - 110) {
             movementTimer.stop();
             playTimer.stop();
+        }
+    }
+
+    // TODO: fix the body check, the if condition is wrong
+    private void bodyCheck() {
+        double headX = snakePiece.getX();
+        double headY = snakePiece.getY();
+        for (int i = 0; i < snakePiece.getGrowth(); i++) {
+            if(headX >= snakeBody[i].getX() && headX <= snakeBody[i].getXPlusSize() &&
+                headY <= snakeBody[i].getY() && headY >= snakeBody[i].getYPlusSize()) {
+                    movementTimer.stop();
+                    playTimer.stop();
+            }
         }
     }
 
