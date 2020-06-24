@@ -18,13 +18,13 @@ class GameFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    static final int FRAME_WIDTH = 800;
-    static final int FRAME_HEIGHT = 700;
+    static final int FRAME_WIDTH = 920;
+    static final int FRAME_HEIGHT = 840;
     static final int STATS_PANEL = 50;
-    final int BORDER_HORIZONTAL = 250;
+    final int BORDER_HORIZONTAL = 245;
     final int BORDER_VERTICAL = 200;
     final int VERTICAL_ALIGNMENT = 110;
-    final int HORIZONTAL_ALIGNMENT = 35;
+    final int HORIZONTAL_ALIGNMENT = 20;
     static int score = 0;
     static int time = 0;
     private JFrame gameFrame;
@@ -37,23 +37,26 @@ class GameFrame extends JFrame implements ActionListener {
     JButton exitButton;
     TimerTask task;
 
+    // TODO: ADD a border
     GameFrame() {
-        gameFrame = new JFrame();
-        setGameFrameParams();
+        gameFrame = setGameFrameParams();
         createMenuPanel();
     }
 
     // set game frame parameters
-    private void setGameFrameParams() {
+    private JFrame setGameFrameParams() {
         Toolkit toolkit = getToolkit();
         Dimension size = toolkit.getScreenSize();
+        gameFrame = new JFrame();
         gameFrame.setLocation(size.width/2 - FRAME_WIDTH/2, size.height/2 - FRAME_HEIGHT/2);
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setTitle("Sneks!");
         gameFrame.setVisible(true);
-        gameFrame.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-        gameFrame.pack();
-        gameFrame.setResizable(false);
+        gameFrame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
+        // gameFrame.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+        // gameFrame.setResizable(false);
+        // gameFrame.pack();
+        return gameFrame;
     }
 
     private void createMenuPanel() {
@@ -127,9 +130,9 @@ class GameFrame extends JFrame implements ActionListener {
                 stopGame();
                 gameFrame.remove(currGamePanel);
                 gameFrame.remove(statsPanel);
-                createBannerPanel();
-                currGamePanel = new StartGame(gameFrame.getWidth() - HORIZONTAL_ALIGNMENT, gameFrame.getHeight() - VERTICAL_ALIGNMENT);
+                currGamePanel = new StartGame(gameFrame.getWidth(), gameFrame.getHeight());
                 currGamePanel.setBackground(new Color(216,223,227));
+                createBannerPanel();
                 gameFrame.add(currGamePanel);
             }
         });
@@ -169,7 +172,7 @@ class GameFrame extends JFrame implements ActionListener {
         menuPanel.setVisible(false);
         gameFrame.remove(menuPanel);
         createBannerPanel();
-        gameFrame.add(currGamePanel = new StartGame(gameFrame.getWidth() - HORIZONTAL_ALIGNMENT, 
+        gameFrame.add(currGamePanel = new StartGame(gameFrame.getWidth(), 
             gameFrame.getHeight() - VERTICAL_ALIGNMENT));
         currGamePanel.setBackground(new Color(216,223,227));
     }

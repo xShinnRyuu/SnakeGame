@@ -1,7 +1,6 @@
 package com.mycompany.snakegame;
 
 import java.awt.*;
-import java.awt.geom.*;
 import java.util.Random;
 
 public class Food {
