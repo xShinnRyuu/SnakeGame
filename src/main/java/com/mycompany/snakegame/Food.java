@@ -12,9 +12,9 @@ public class Food {
     private final int FOOD_SIZE = 20;
     boolean foodFlag;
     int x, y;
-    float constraintX, constraintY;
+    int constraintX, constraintY;
 
-    public Food(float constraintX, float constraintY) {
+    public Food(int constraintX, int constraintY) {
         foodFlag = false;
         x = 0;
         y = 0;
@@ -26,8 +26,8 @@ public class Food {
         final Graphics2D g2 = (Graphics2D) g;
         if (!foodFlag) {
             Random rand = new Random();
-            x = rand.nextInt((int) constraintX);
-            y = rand.nextInt((int) constraintY);
+            x = rand.nextInt(constraintX - FOOD_SIZE);
+            y = rand.nextInt(constraintY - FOOD_SIZE);
         }
         g2.setColor(foodColor);
         g2.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);

@@ -11,20 +11,19 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    private final double POSITIVE_SPEED = 20;   // Higher is faster
-    private final double NEGATIVE_SPEED = -20;  // Higher is faster
-    private final int GAME_REDRAW_SPEED = 40;   // Lower is faster, but will cause less flicker
+    private  double POSITIVE_SPEED = 20;   // Higher is faster
+    private  double NEGATIVE_SPEED = -20;  // Higher is faster
+    private final int GAME_REDRAW_SPEED = 55;   // Lower is faster, but will cause less flicker
     private final int GAME_TIMER_ONE_SECOND = 1000;
     private final int MAX = 4;
     private final int MIN = 1;
-    private final int GAME_WIDTH = 890;
     private int maxSnakeLength;
     private Snake snakePiece;
     private Snake snakeBody[];
     private Food food;
     static Timer movementTimer;
     static Timer playTimer;
-    double velx, vely;
+    // double velx, vely;
 
     public static void main(String[] args) {
         new GameFrame();
@@ -36,15 +35,15 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
 
     private void startGame(float frameWidth, float frameHeight) {
         snakePiece = new Snake(frameWidth, frameHeight, true);
-        food = new Food(frameWidth, frameHeight);
+        food = new Food((int) GameFrame.getAdjustedWidth(), (int) GameFrame.getAdjustedHeight());
         maxSnakeLength = (int) ((frameWidth * frameHeight) / (snakePiece.getSnakeSize() * 2));
         snakeBody = new Snake[maxSnakeLength];
         snakeBody[0] = snakePiece;
-        velx = 0;
-        vely = 0;
+        // velx = 0;
+        // vely = 0;
+        setStartDirection();
         startTimers();
         addKeyListener(this);
-        setStartDirection();
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
     }
@@ -63,6 +62,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         }
     };
 
+    @Override
     public void paintComponent(final Graphics g) {
         requestFocus(true);
         final Graphics2D g2 = (Graphics2D) g;
@@ -72,7 +72,8 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
             g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
                 snakePiece.SNAKE_SIZE));
                 // g2.fillRect(830-10, 840-10, 10, 10);
-                g2.fillRect(900, 0, 10, 1000);
+                g2.fillRect(920, 0, 10, 940);
+                g2.fillRect(0, 940, i, 10);
                 // g2.fillRect(0, 840-10, 10, 10);
             // g2.fill(new Ellipse2D.Double(snakePiece.getX(), snakePiece.getY(), snakePiece.SNAKE_SIZE,
             // snakePiece.SNAKE_SIZE));
@@ -86,27 +87,65 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
             if (i == 0) {
                 snakeHeadDirChange();
                 wallCheck();
-                bodyCheck();
                 eatCheck();
+                bodyCheck();
                 break;
             }
-            snakeBodyGrow(i);
+            snakeBodyDirChange(i);
         }
     }
 
-    private void snakeBodyGrow(int i) {
-        snakeBody[i].setX(snakeBody[i-1].getX());
-        snakeBody[i].setY(snakeBody[i-1].getY());
+    private void snakeBodyDirChange(int i) {
+        // System.out.println("snakePiece.getX(): " + snakePiece.getX());
+        // System.out.println("snakeBody["+i+"].getX(): " + snakeBody[i].getX());
+        // System.out.println("snakeBody["+i+"].getXPlusSize(): " + snakeBody[i].getXPlusSize());
+        // System.out.println("snakePiece.getY(): " + snakePiece.getY());
+        // System.out.println("snakeBody["+i+"].getY(): " + snakeBody[i].getY());
+        // System.out.println("snakeBody["+i+"].getYPlusSize(): " + snakeBody[i].getYPlusSize());
+        // System.out.println();
+        if (snakeBody[i].getVelX() != snakeBody[i-1].getVelX() || snakeBody[i].getVelY() != snakeBody[i-1].getVelY()) {
+            // System.out.println("IF!");
+            snakeBody[i].setX(snakeBody[i-1].getX());
+            snakeBody[i].setY(snakeBody[i-1].getY());
+            // snakeHeadDirChange();
+            snakeBody[i].setVelX(snakeBody[i-1].getVelX());
+            snakeBody[i].setVelY(snakeBody[i-1].getVelY());
+        } else {
+            // System.out.println("ELSE!");
+            if (snakeBody[i].getVelY() < 0) {
+                // System.out.println(i + " Y: " + snakeBody[i].getVelY());
+                snakeBody[i].setX(snakeBody[i-1].getX());
+                snakeBody[i].setY(snakeBody[i-1].getYPlusSize() + snakeBody[i-1].getVelY());
+            } else if (snakeBody[i].getVelY() > 0) {
+                // System.out.println(i + " Y: " +snakeBody[i].getVelY());
+                snakeBody[i].setX(snakeBody[i-1].getX());
+                snakeBody[i].setY(snakeBody[i-1].getYMinusSize() + snakeBody[i-1].getVelY());
+            } else if (snakeBody[i].getVelX() < 0) {
+                // System.out.println(i + " X: " +snakeBody[i].getVelX());
+                snakeBody[i].setX(snakeBody[i-1].getXPlusSize() + snakeBody[i-1].getVelX());
+                snakeBody[i].setY(snakeBody[i-1].getY());
+            } else if (snakeBody[i].getVelX() > 0) {
+                // System.out.println(i + " X: " +snakeBody[i].getVelX());
+                snakeBody[i].setX(snakeBody[i-1].getXMinusSize() + snakeBody[i-1].getVelX());
+                snakeBody[i].setY(snakeBody[i-1].getY());
+            }
+                // snakeBody[i].setY(snakeBody[i-1].getX() + snakeBody[i-1].getVelX());
+                // snakeBody[i].setY(snakeBody[i-1].getY() + snakeBody[i-1].getVelX());
+        }
     }
 
     private void snakeHeadDirChange() {
-        if (vely < 0 || vely > 0) {
-            snakePiece.setX(snakePiece.getX());
-            snakePiece.setY(snakePiece.getY() + vely);
-        } else if (velx < 0 || velx > 0) {
-            snakePiece.setX(snakePiece.getX() + velx);
-            snakePiece.setY(snakePiece.getY());
-        } 
+    //     double velx = snakePiece.getVelX();
+    //     double vely = snakePiece.getVelY();
+    //     if (vely < 0 || vely > 0) {
+    //         snakePiece.setVelX(0);
+    //         snakePiece.setVelY(vely);
+    //     } else if (velx != 0) {
+    //         snakePiece.setVelX(velx);
+    //         snakePiece.setVelY(0);
+    //     } 
+        snakePiece.setX(snakePiece.getX() + snakePiece.getVelX());
+        snakePiece.setY(snakePiece.getY() + snakePiece.getVelY());
     }
 
     private void foodCheck(final Graphics2D g2) {
@@ -116,28 +155,38 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    void toggleFlag() {
+        food.foodFlag = !food.foodFlag;
+    }
+
     private void wallCheck() {
-        if (snakePiece.getX() <= 0 || snakePiece.getXPlusSize() >= GAME_WIDTH
-                || snakePiece.getY() <= 0 || snakePiece.getY() >= GameFrame.FRAME_HEIGHT) {
-            System.out.println("X: " + snakePiece.getX());
-            System.out.println("Y: " + snakePiece.getY());
-            System.out.println("GameFrame.FRAME_WIDTH: " + GameFrame.FRAME_WIDTH);
-            System.out.println("GameFrame.FRAME_HEIGHT: " + GameFrame.FRAME_HEIGHT);
-            System.out.println();
+        if (snakePiece.getX() <= 0 || snakePiece.getXPlusSize() >= GameFrame.getAdjustedWidth()
+                || snakePiece.getY() <= 0 || snakePiece.getYPlusSize() >= GameFrame.getAdjustedHeight()) {
+            // System.out.println("X: " + snakePiece.getX());
+            // System.out.println("Y: " + snakePiece.getY());
+            // System.out.println("GameFrame.FRAME_WIDTH: " + GameFrame.getAdjustedWidth());
+            // System.out.println("GameFrame.FRAME_HEIGHT: " + GameFrame.getAdjustedHeight());
+            // System.out.println();
             movementTimer.stop();
             playTimer.stop();
         }
     }
 
-    // TODO: fix the body check, the if condition is wrong
+    // BUG: body check somewhat works... seems to be a little buggy
     private void bodyCheck() {
-        double headX = snakePiece.getX();
-        double headY = snakePiece.getY();
-        for (int i = 0; i < snakePiece.getGrowth(); i++) {
-            if(headX >= snakeBody[i].getX() && headX <= snakeBody[i].getXPlusSize() &&
-                headY <= snakeBody[i].getY() && headY >= snakeBody[i].getYPlusSize()) {
-                    movementTimer.stop();
-                    playTimer.stop();
+        for (int i = snakePiece.getGrowth(); i > 3; i--) {
+            double headX = snakePiece.getX();
+            double headY = snakePiece.getY();
+            if(headX >= snakeBody[i].getX() && headX <= snakeBody[i].getXPlusSize() && 
+                headY >= snakeBody[i].getY() && headY <= snakeBody[i].getYPlusSize()) {
+                    System.out.println("headX: " + headX);
+                    System.out.println("snakeBody["+i+"].getX(): " + snakeBody[i].getX());
+                    System.out.println("snakeBody["+i+"].getXPlusSize(): " + snakeBody[i].getXPlusSize());
+                    System.out.println("headY: " + headY);
+                    System.out.println("snakeBody["+i+"].getY(): " + snakeBody[i].getY());
+                    System.out.println("snakeBody["+i+"].getYPlusSize(): " + snakeBody[i].getYPlusSize());
+                movementTimer.stop();
+                playTimer.stop();
             }
         }
     }
@@ -146,7 +195,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         if(checkRight() || checkLeft()) {
             snakePiece.eat();
             int tail = snakePiece.getGrowth();
-            snakeBody[tail] = new Snake(-25, -25);
+            snakeBody[tail] = new Snake(-25, -25, snakeBody[tail-1].getVelX(), snakeBody[tail-1].getVelY());
             toggleFlag();
             GameFrame.increaseScore();
         }
@@ -168,53 +217,54 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
             && snakePiece.getY() + snakePiece.getSnakeSize() > currFoodLocY && snakePiece.getY() < currFoodLocY + foodSize;
     }
 
-    void toggleFlag() {
-        food.foodFlag = !food.foodFlag;
-    }
-
     private void setStartDirection() {
         int dir = (int) (Math.random() * (MAX - MIN + 1) + MIN);
         if (dir == 1) { //  UP
-            vely = NEGATIVE_SPEED;
-            velx = 0;
+            snakePiece.setVelY(NEGATIVE_SPEED);
+            snakePiece.setVelX(0);
         } else if (dir == 2) {  //  DOWN
-            vely = POSITIVE_SPEED;
-            velx = 0;
+            snakePiece.setVelY(POSITIVE_SPEED);
+            snakePiece.setVelX(0);
         } else if (dir == 3){   // LEFT
-            vely = 0;
-            velx = NEGATIVE_SPEED;
+            snakePiece.setVelY(0);
+            snakePiece.setVelX(NEGATIVE_SPEED);
         } else {    // RIGHT
-            vely = 0;
-            velx = POSITIVE_SPEED;
+            snakePiece.setVelY(0);
+            snakePiece.setVelX(POSITIVE_SPEED);
         } 
     }
 
     private void up() {
-        if (vely <= 0) {
-            vely = NEGATIVE_SPEED;
-            velx = 0;
+        if (snakePiece.getVelY() <= 0) {
+            snakePiece.setVelY(NEGATIVE_SPEED);
+            snakePiece.setVelX(0);
         }
     }
 
     private void down() {
-        if (vely >= 0) {
-            vely = POSITIVE_SPEED;
-            velx = 0;
+        if (snakePiece.getVelY() >= 0) {
+            snakePiece.setVelY(POSITIVE_SPEED);
+            snakePiece.setVelX(0);
         }
     }
 
     private void left() {
-        if (velx <= 0) {
-            vely = 0;
-            velx = NEGATIVE_SPEED;
+        if (snakePiece.getVelX() <= 0) {
+            snakePiece.setVelY(0);
+            snakePiece.setVelX(NEGATIVE_SPEED);
         }
     }
 
     private void right() {
-        if (velx >= 0) {
-            vely = 0;
-            velx = POSITIVE_SPEED;
+        if (snakePiece.getVelX() >= 0) {
+            snakePiece.setVelY(0);
+            snakePiece.setVelX(POSITIVE_SPEED);
         }
+    }
+
+    private void space() {
+        POSITIVE_SPEED = 1;
+        NEGATIVE_SPEED = -1;
     }
 
     @Override
@@ -231,6 +281,9 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         }
         if (code == KeyEvent.VK_RIGHT) {
             right();
+        }
+        if (code == KeyEvent.VK_SPACE) {
+            space();
         }
     }
 
