@@ -18,7 +18,7 @@ class GameFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    static final int FRAME_WIDTH = 920;
+    static final int FRAME_WIDTH = 950;
     static final int FRAME_HEIGHT = 900;
     static final int STATS_PANEL = 50;
     final int BORDER_HORIZONTAL = 245;
@@ -54,7 +54,7 @@ class GameFrame extends JFrame implements ActionListener {
         // gameFrame.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         gameFrame.setSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
         gameFrame.setVisible(true);
-        gameFrame.setResizable(false);
+        // gameFrame.setResizable(false);
         // gameFrame.pack();
         // return gameFrame;
     }
@@ -85,9 +85,9 @@ class GameFrame extends JFrame implements ActionListener {
         statsPanel.setLayout(new GridLayout(1, 3));
         statsPanel.setBackground(new Color(52, 116, 235));
         statsPanel.setVisible(true);
-        System.out.println(statsPanel.getHeight());
-        System.out.println(statsPanel.getWidth());
-        System.out.println();
+        // System.out.println(statsPanel.getHeight());
+        // System.out.println(statsPanel.getWidth());
+        // System.out.println();
 
         // setup score label
         scoreLabel = new JLabel(" Score: " + score);
