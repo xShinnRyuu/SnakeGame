@@ -18,7 +18,7 @@ class GameFrame extends JFrame implements ActionListener {
      *
      */
     private static final long serialVersionUID = 1L;
-    static final int FRAME_WIDTH = 950;
+    static final int FRAME_WIDTH = 850;
     static final int FRAME_HEIGHT = 900;
     static final int STATS_PANEL = 50;
     final int BORDER_HORIZONTAL = 245;
@@ -27,6 +27,7 @@ class GameFrame extends JFrame implements ActionListener {
     final int HORIZONTAL_ALIGNMENT = 20;
     static int score = 0;
     static int time = 0;
+    static final int BORDER_SIZE = 5;
     private JFrame gameFrame;
     private JPanel statsPanel;
     private JPanel menuPanel;
@@ -61,7 +62,6 @@ class GameFrame extends JFrame implements ActionListener {
 
     private void createMenuPanel() {
         menuPanel = new JPanel();
-        menuPanel.setSize(new Dimension(500, 500));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(BORDER_VERTICAL, BORDER_HORIZONTAL, BORDER_VERTICAL,
                 BORDER_HORIZONTAL));
         menuPanel.setLayout(new GridLayout(1, 0));
@@ -85,9 +85,6 @@ class GameFrame extends JFrame implements ActionListener {
         statsPanel.setLayout(new GridLayout(1, 3));
         statsPanel.setBackground(new Color(52, 116, 235));
         statsPanel.setVisible(true);
-        // System.out.println(statsPanel.getHeight());
-        // System.out.println(statsPanel.getWidth());
-        // System.out.println();
 
         // setup score label
         scoreLabel = new JLabel(" Score: " + score);
@@ -169,7 +166,9 @@ class GameFrame extends JFrame implements ActionListener {
 
     private void createNewRound() {
         createBannerPanel();
-        currGamePanel = new StartGame(gameFrame.getWidth(), gameFrame.getHeight());
+        currGamePanel = new StartGame(FRAME_WIDTH, FRAME_HEIGHT - STATS_PANEL);
+        currGamePanel.setBorder(BorderFactory.createMatteBorder(BORDER_SIZE, 
+            BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, Color.GRAY));
         currGamePanel.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT - STATS_PANEL));
         currGamePanel.setBackground(new Color(216,223,227));
         gameFrame.getContentPane().add(currGamePanel);
@@ -198,7 +197,6 @@ class GameFrame extends JFrame implements ActionListener {
     }
 
     public static void increaseScore() {
-        // System.out.println("score: " + score);
         scoreLabel.setText(" Score: " + ++score);
     }
 
@@ -211,10 +209,10 @@ class GameFrame extends JFrame implements ActionListener {
     }
 
     public static double getAdjustedHeight() {
-        return FRAME_HEIGHT - STATS_PANEL;
+        return FRAME_HEIGHT - STATS_PANEL + BORDER_SIZE;
     }
 
     public static double getAdjustedWidth() {
-        return FRAME_WIDTH;
+        return FRAME_WIDTH + BORDER_SIZE;
     }
 }

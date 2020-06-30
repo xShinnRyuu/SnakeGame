@@ -13,7 +13,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     private static final long serialVersionUID = 1L;
     private  double POSITIVE_SPEED = 20;   // Higher is faster
     private  double NEGATIVE_SPEED = -20;  // Higher is faster
-    private final int GAME_REDRAW_SPEED = 35;   // Lower is faster, but will cause less flicker
+    private final int GAME_REDRAW_SPEED = 40;   // Lower is faster, but will cause less flicker
     private final int GAME_TIMER_ONE_SECOND = 1000;
     private final int MAX = 4;
     private final int MIN = 1;
@@ -132,21 +132,20 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     }
 
     private void wallCheck() {
-        if (snakePiece.getX() <= 0 || snakePiece.getXPlusSize() >= GameFrame.getAdjustedWidth()
-                || snakePiece.getY() <= 0 || snakePiece.getYPlusSize() >= GameFrame.getAdjustedHeight()) {
+        if (snakePiece.getX() < 0 || snakePiece.getXPlusSize() >= GameFrame.getAdjustedWidth()
+                || snakePiece.getY() < 0 || snakePiece.getYPlusSize() >= GameFrame.getAdjustedHeight()) {
             System.out.println("snakePiece.getX(): " + snakePiece.getX());
-            System.out.println("snakePiece.getY(): " + snakePiece.getY());
             System.out.println("snakePiece.getXPlusSize(): " + snakePiece.getXPlusSize());
+            System.out.println("snakePiece.getY(): " + snakePiece.getY());
             System.out.println("snakePiece.getYPlusSize(): " + snakePiece.getYPlusSize());
             System.out.println("GameFrame.getAdjustedWidth(): " + GameFrame.getAdjustedWidth());
             System.out.println("GameFrame.getAdjustedHeight(): " + GameFrame.getAdjustedHeight());
+            System.out.println();
             movementTimer.stop();
             playTimer.stop();
         }
     }
 
-    // BUG: body check somewhat works... seems to be a little buggy
-    // DNOTE: Might be fixed?
     private void bodyCheck() {
         for (int i = snakePiece.getGrowth(); i > 3; i--) {
             double headX = snakePiece.getX();
