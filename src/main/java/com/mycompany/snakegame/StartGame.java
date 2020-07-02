@@ -23,18 +23,14 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     private Food food;
     static Timer movementTimer;
     static Timer playTimer;
-
-    public static void main(String[] args) {
-        new GameFrame();
-    }
     
     public StartGame(float frameWidth, float frameHeight) {
         startGame(frameWidth, frameHeight);
     }
 
     private void startGame(float frameWidth, float frameHeight) {
-        snakePiece = new Snake(frameWidth, frameHeight, true);
-        food = new Food((int) GameFrame.getAdjustedWidth(), (int) GameFrame.getAdjustedHeight());
+        snakePiece = new Snake(GameFrame.getAdjustedWidthForSnakeStart(), GameFrame.getAdjustedHeightForSnakeStart(), true);
+        food = new Food();
         maxSnakeLength = (int) ((frameWidth * frameHeight) / (snakePiece.getSnakeSize() * 2));
         snakeBody = new Snake[maxSnakeLength];
         snakeBody[0] = snakePiece;
@@ -68,24 +64,18 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         for (int i = snakePiece.getGrowth(); i >= 0; i--) {
             g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
                 snakePiece.SNAKE_SIZE));
-                // g2.fillRect(830-10, 840-10, 10, 10);
-                g2.fillRect(920, 0, 10, 940);
-                g2.fillRect(0, 900, i, 50);
-                // g2.fillRect(0, 840-10, 10, 10);
-            // g2.fill(new Ellipse2D.Double(snakePiece.getX(), snakePiece.getY(), snakePiece.SNAKE_SIZE,
-            // snakePiece.SNAKE_SIZE));
         }
     }
 
     @Override
     public void actionPerformed(final ActionEvent e) {
-        repaint();
         for (int i = snakePiece.getGrowth(); i >= 0; i--) {
+            repaint();
             if (i == 0) {
-                snakeHeadDirChange();
-                wallCheck();
                 eatCheck();
                 bodyCheck();
+                snakeHeadDirChange();
+                wallCheck();
                 break;
             }
             snakeBodyDirChange(i);
@@ -132,18 +122,26 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     }
 
     private void wallCheck() {
-        if (snakePiece.getX() < 0 || snakePiece.getXPlusSize() >= GameFrame.getAdjustedWidth()
-                || snakePiece.getY() < 0 || snakePiece.getYPlusSize() >= GameFrame.getAdjustedHeight()) {
-            System.out.println("snakePiece.getX(): " + snakePiece.getX());
-            System.out.println("snakePiece.getXPlusSize(): " + snakePiece.getXPlusSize());
-            System.out.println("snakePiece.getY(): " + snakePiece.getY());
-            System.out.println("snakePiece.getYPlusSize(): " + snakePiece.getYPlusSize());
-            System.out.println("GameFrame.getAdjustedWidth(): " + GameFrame.getAdjustedWidth());
-            System.out.println("GameFrame.getAdjustedHeight(): " + GameFrame.getAdjustedHeight());
-            System.out.println();
+        if (snakePiece.getX() < GameFrame.getAdjustedWidthForLeftWall() ||
+                snakePiece.getXPlusSize() > GameFrame.getAdjustedWidthForRightWall() ||
+                snakePiece.getY() < GameFrame.getAdjustedHeightForTopWall() ||
+                snakePiece.getYPlusSize() >= GameFrame.getAdjustedHeightForBotWall()) {
             movementTimer.stop();
             playTimer.stop();
         }
+        // System.out.println();
+        // System.out.println("snakePiece.getX(): " + snakePiece.getX());
+        // System.out.println("GameFrame.getAdjustedWidthForLeftWall(): " + GameFrame.getAdjustedWidthForLeftWall());
+        // System.out.println();
+        // System.out.println("snakePiece.getXPlusSize(): " + snakePiece.getXPlusSize());
+        // System.out.println("GameFrame.getAdjustedWidthForRightWall(): " + GameFrame.getAdjustedWidthForRightWall());
+        // System.out.println("GameFrame.getAdjustedWidth(): " + (GameFrame.getAdjustedWidth()));
+        // System.out.println();
+        // System.out.println("snakePiece.getY(): " + snakePiece.getY());
+        // System.out.println("GameFrame.getAdjustedHeightForTopWall(): " + GameFrame.getAdjustedHeightForTopWall());
+        // System.out.println("snakePiece.getYPlusSize(): " + snakePiece.getYPlusSize());
+        // System.out.println("GameFrame.getAdjustedHeightForBotWall(): " + GameFrame.getAdjustedHeightForBotWall());
+        // System.out.println();
     }
 
     private void bodyCheck() {
@@ -230,8 +228,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     }
 
     private void space() {
-        POSITIVE_SPEED = 1;
-        NEGATIVE_SPEED = -1;
+        movementTimer.setDelay(100);
     }
 
     @Override

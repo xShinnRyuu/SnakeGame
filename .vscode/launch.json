@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - SnakeGame",
+            "request": "launch",
+            "mainClass": "com.mycompany.snakegame.SnakeGame",
+            "projectName": "my-snakegame"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - StartGame",
+            "request": "launch",
+            "mainClass": "com.mycompany.snakegame.StartGame",
+            "projectName": "my-snakegame"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - StartGame",
             "request": "launch",
             "mainClass": "com.mycompany.snakegame.StartGame",

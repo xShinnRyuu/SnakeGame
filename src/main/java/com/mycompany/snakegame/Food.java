@@ -12,22 +12,24 @@ public class Food {
     private final int FOOD_SIZE = 20;
     boolean foodFlag;
     int x, y;
-    int constraintX, constraintY;
+    int constraintXLeft, constraintXRight, constraintYTop, constraintYBot;
 
-    public Food(int constraintX, int constraintY) {
+    public Food() {
         foodFlag = false;
         x = 0;
         y = 0;
-        this.constraintX = constraintX;
-        this.constraintY = constraintY;
+        this.constraintXLeft = GameFrame.getAdjustedWidthForLeftWall();
+        this.constraintXRight = GameFrame.getAdjustedWidthForRightWall();
+        this.constraintYTop = GameFrame.getAdjustedHeightForTopWall();
+        this.constraintYBot = GameFrame.getAdjustedHeightForBotWall();
     }
 
     public void spawnFood(final Graphics g, boolean foodFlag) {
         final Graphics2D g2 = (Graphics2D) g;
         if (!foodFlag) {
             Random rand = new Random();
-            x = rand.nextInt(constraintX - FOOD_SIZE);
-            y = rand.nextInt(constraintY - FOOD_SIZE);
+            x = rand.nextInt(constraintXRight - constraintXLeft - FOOD_SIZE) + constraintXLeft;
+            y = rand.nextInt((constraintYBot - 10) - constraintYTop - FOOD_SIZE) + constraintYTop;
         }
         g2.setColor(foodColor);
         g2.fillRect(x, y, FOOD_SIZE, FOOD_SIZE);
