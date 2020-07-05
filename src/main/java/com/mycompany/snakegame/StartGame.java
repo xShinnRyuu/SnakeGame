@@ -13,7 +13,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     private static final long serialVersionUID = 1L;
     private  double POSITIVE_SPEED = 20;   // Higher is faster
     private  double NEGATIVE_SPEED = -20;  // Higher is faster
-    private final int GAME_REDRAW_SPEED = 40;   // Lower is faster, but will cause less flicker
+    private final int GAME_REDRAW_SPEED = 50;   // Lower is faster, but will cause less flicker
     private final int GAME_TIMER_ONE_SECOND = 1000;
     private final int MAX = 4;
     private final int MIN = 1;
@@ -23,6 +23,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     private Food food;
     static Timer movementTimer;
     static Timer playTimer;
+
     
     public StartGame(float frameWidth, float frameHeight) {
         startGame(frameWidth, frameHeight);
@@ -61,9 +62,13 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         final Graphics2D g2 = (Graphics2D) g;
         super.paintComponent(g);
         foodCheck(g2);
-        for (int i = snakePiece.getGrowth(); i >= 0; i--) {
+        g2.setColor(Color.RED);
+        g2.fill(new Ellipse2D.Double(snakeBody[0].getX(), snakeBody[0].getY(), snakePiece.SNAKE_SIZE,
+            snakePiece.SNAKE_SIZE));
+        for (int i = snakePiece.getGrowth(); i > 0; i--) {
+            g2.setColor(Color.BLACK);
             g2.fill(new Ellipse2D.Double(snakeBody[i].getX(), snakeBody[i].getY(), snakePiece.SNAKE_SIZE,
-                snakePiece.SNAKE_SIZE));
+                    snakePiece.SNAKE_SIZE));
         }
     }
 
@@ -71,9 +76,9 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
     public void actionPerformed(final ActionEvent e) {
         for (int i = snakePiece.getGrowth(); i >= 0; i--) {
             repaint();
+            bodyCheck();
             if (i == 0) {
                 eatCheck();
-                bodyCheck();
                 snakeHeadDirChange();
                 wallCheck();
                 break;
@@ -125,33 +130,18 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         if (snakePiece.getX() < GameFrame.getAdjustedWidthForLeftWall() ||
                 snakePiece.getXPlusSize() > GameFrame.getAdjustedWidthForRightWall() ||
                 snakePiece.getY() < GameFrame.getAdjustedHeightForTopWall() ||
-                snakePiece.getYPlusSize() >= GameFrame.getAdjustedHeightForBotWall()) {
-            movementTimer.stop();
-            playTimer.stop();
+                snakePiece.getYPlusSize() > GameFrame.getAdjustedHeightForBotWall()) {
+            endRound();
         }
-        // System.out.println();
-        // System.out.println("snakePiece.getX(): " + snakePiece.getX());
-        // System.out.println("GameFrame.getAdjustedWidthForLeftWall(): " + GameFrame.getAdjustedWidthForLeftWall());
-        // System.out.println();
-        // System.out.println("snakePiece.getXPlusSize(): " + snakePiece.getXPlusSize());
-        // System.out.println("GameFrame.getAdjustedWidthForRightWall(): " + GameFrame.getAdjustedWidthForRightWall());
-        // System.out.println("GameFrame.getAdjustedWidth(): " + (GameFrame.getAdjustedWidth()));
-        // System.out.println();
-        // System.out.println("snakePiece.getY(): " + snakePiece.getY());
-        // System.out.println("GameFrame.getAdjustedHeightForTopWall(): " + GameFrame.getAdjustedHeightForTopWall());
-        // System.out.println("snakePiece.getYPlusSize(): " + snakePiece.getYPlusSize());
-        // System.out.println("GameFrame.getAdjustedHeightForBotWall(): " + GameFrame.getAdjustedHeightForBotWall());
-        // System.out.println();
     }
 
     private void bodyCheck() {
-        for (int i = snakePiece.getGrowth(); i > 3; i--) {
-            double headX = snakePiece.getX();
-            double headY = snakePiece.getY();
+        double headX = snakePiece.getX();
+        double headY = snakePiece.getY();
+        for (int i = snakePiece.getGrowth(); i > 2; i--) {
             if(headX >= snakeBody[i].getX()-1 && headX <= snakeBody[i].getXPlusSize()-1 && 
-                headY >= snakeBody[i].getY()-1 && headY <= snakeBody[i].getYPlusSize()-1) {
-                    movementTimer.stop();
-                    playTimer.stop();
+                    headY >= snakeBody[i].getY()-1 && headY <= snakeBody[i].getYPlusSize()-1) {
+                endRound();
             }
         }
     }
@@ -160,7 +150,7 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         if(checkRight() || checkLeft()) {
             snakePiece.eat();
             int tail = snakePiece.getGrowth();
-            snakeBody[tail] = new Snake(-25, -25, snakeBody[tail-1].getVelX(), snakeBody[tail-1].getVelY());
+            snakeBody[tail] = new Snake(0, 0, snakeBody[tail-1].getVelX(), snakeBody[tail-1].getVelY());
             toggleFlag();
             GameFrame.increaseScore();
         }
@@ -180,6 +170,12 @@ public class StartGame extends JPanel implements ActionListener, KeyListener {
         double foodSize = food.getSize();
         return snakePiece.getX() + snakePiece.getSnakeSize() > currFoodLocX && snakePiece.getX() < currFoodLocX + foodSize
             && snakePiece.getY() + snakePiece.getSnakeSize() > currFoodLocY && snakePiece.getY() < currFoodLocY + foodSize;
+    }
+
+    private void endRound() {
+        movementTimer.stop();
+        playTimer.stop();
+        GameFrame.displayGameOver();
     }
 
     private void setStartDirection() {

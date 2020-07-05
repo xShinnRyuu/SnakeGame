@@ -28,9 +28,10 @@ class GameFrame extends JFrame implements ActionListener {
     private JFrame gameFrame;
     private JPanel statsPanel;
     private JPanel menuPanel;
-    private JPanel currGamePanel;
+    private static JPanel currGamePanel;
     static JLabel timeLabel;
     static JLabel scoreLabel;
+    static JLabel gameOver;
     JButton resetButton;
     JButton exitButton;
     static Insets insets;
@@ -40,7 +41,8 @@ class GameFrame extends JFrame implements ActionListener {
     GameFrame() {
         gameFrame = new JFrame();
         setGameFrameParams();
-        createMenuPanel();        
+        createMenuPanel();
+        gameOver = new JLabel();
         insets = gameFrame.getInsets();
     }
 
@@ -48,7 +50,7 @@ class GameFrame extends JFrame implements ActionListener {
     private void setGameFrameParams() {
         Toolkit toolkit = getToolkit();
         Dimension size = toolkit.getScreenSize();
-        gameFrame.setLocation(size.width/2 - (int)FRAME_HEIGHT/2, size.height/2 - (int)FRAME_WIDTH/2);
+        gameFrame.setLocation(size.width / 2 - (int) FRAME_HEIGHT / 2, size.height / 2 - (int) FRAME_WIDTH / 2);
         gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameFrame.setTitle("Sneks!");
         gameFrame.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
@@ -100,12 +102,11 @@ class GameFrame extends JFrame implements ActionListener {
         statsPanel.add(scoreLabel, BorderLayout.WEST);
 
         // setup time label
-        timeLabel = new JLabel("Time: " + time + " " , SwingConstants.RIGHT);
+        timeLabel = new JLabel("Time: " + time + " ", SwingConstants.RIGHT);
         statsPanel.add(timeLabel, BorderLayout.EAST);
 
         statsPanel.add(createIngameButtons(statsPanel));
         gameFrame.add(statsPanel, BorderLayout.NORTH);
-        System.out.println(statsPanel.getHeight());
     }
 
     private JPanel createIngameButtons(JPanel statsPanel) {
@@ -159,16 +160,24 @@ class GameFrame extends JFrame implements ActionListener {
         createNewRound();
     }
 
+    static void displayGameOver() {
+        gameOver.setFont(new Font(null, Font.BOLD, 120));
+        gameOver.setText("Game Over!");
+        currGamePanel.setLayout(new GridBagLayout());
+        currGamePanel.add(gameOver);
+        gameOver.setVisible(true);
+    }
+
     private void createNewRound() {
         createBannerPanel();
         currGamePanel = new StartGame(getAdjustedCurrGamePanelWidth(), (int)getAdjustedCurrGamePanelHeight());
         currGamePanel.setBorder(BorderFactory.createMatteBorder(BORDER_SIZE, 
-            BORDER_SIZE, BORDER_SIZE+8, BORDER_SIZE, Color.GRAY));
+            BORDER_SIZE, BORDER_SIZE+6, BORDER_SIZE, Color.GRAY));
         currGamePanel.setSize(getAdjustedCurrGamePanelWidth(), (int)getAdjustedCurrGamePanelHeight());
         currGamePanel.setBackground(new Color(216,223,227));
         currGamePanel.setVisible(true);
         gameFrame.getContentPane().add(currGamePanel);
-        // gameFrame.pack();
+        gameOver.setVisible(false);
     }
 
     void resetScore() {
@@ -212,7 +221,7 @@ class GameFrame extends JFrame implements ActionListener {
         return BORDER_SIZE;
     }
     static int getAdjustedHeightForBotWall() {
-        return FRAME_HEIGHT - BORDER_SIZE - insets.bottom - 80;
+        return FRAME_HEIGHT - BORDER_SIZE - insets.bottom - 100;
     }
 
     static double getAdjustedHeightForSnakeStart() {
